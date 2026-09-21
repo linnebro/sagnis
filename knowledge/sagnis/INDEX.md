@@ -4,7 +4,7 @@
 
 Triggers: package, skill, scaffold, tier, template, script, selftest, evidence, example, getting started, publish, release
 
-Tasks: [TASKS.md](TASKS.md) — generated roster, 2 open in 1 initiatives (detail in `initiatives/`); decision log: [LOG.md](LOG.md)
+Tasks: [TASKS.md](TASKS.md) — generated roster, 3 open in 2 initiatives (detail in `initiatives/`); decision log: [LOG.md](LOG.md)
 
 (no facts yet)
 
@@ -13,5 +13,5 @@ Tasks: [TASKS.md](TASKS.md) — generated roster, 2 open in 1 initiatives (detai
 | Mirror index | Triggers |
 |---|---|
 | [The example workspace](example/INDEX.md) | example, Fernwood, fictional, sample workspace, demo |
-| [The package](package/INDEX.md) | SKILL.md, EVIDENCE, scripts, templates, references, selftest, measure, init_workspace, build_index, build_tasks, build_journal |
+| [The package](package/INDEX.md) | SKILL.md, EVIDENCE, scripts, templates, references, selftest, measure, init_workspace, build_index, build_tasks, build_journal, cowork, Copilot, OneDrive, Preferences |
 | [Repository root](repo/INDEX.md) | repo root, README, layout, licence |

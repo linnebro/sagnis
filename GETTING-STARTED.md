@@ -77,6 +77,16 @@ it opened the index and one file, not the tree. Run `measure.py` again.
 If it did not go that way, [open an issue](../../issues/new?template=install-stall.md)
 saying where you stopped. That is a documentation bug, not your mistake.
 
+## Copilot Cowork instead of a coding agent (15 minutes)
+
+No shell, no git, no `AGENTS.md`: the master space is your OneDrive
+`/Documents/Cowork/`, the instructions are a Preferences block, and the assistant
+keeps the indexes by hand in the same shape the script generates. Copy
+`sagnis/cowork/master/` into that folder, paste `sagnis/cowork/PREFERENCES.md`
+into Customize > Preferences, and say *learn the environment, read-only* in a new
+conversation. The rest, and what maps to what, is in
+[sagnis/cowork/README.md](sagnis/cowork/README.md).
+
 ## Tier 2: state and guardrails (an hour, once Tier 1 is habit)
 
 ```

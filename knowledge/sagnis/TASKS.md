@@ -14,8 +14,15 @@ this repository.
 ## Recent — initiatives touched (git commit date), last 5
 
 - 2026-09-21 [Publication](initiatives/publication.md) — 2 open
+- 2026-09-21 [Harnesses](initiatives/harnesses.md) — 1 open
 
-## Open — 2 tasks in 1 initiatives
+## Open — 3 tasks in 2 initiatives
+
+### Harnesses — [initiatives/harnesses.md](initiatives/harnesses.md)
+
+| Task | Area | When | Status |
+|---|---|---|---|
+| Verify the Cowork build on a live tenant | Copilot Cowork | Open | Open |
 
 ### Publication — [initiatives/publication.md](initiatives/publication.md)
 
@@ -24,9 +31,10 @@ this repository.
 | Fold in what the first installs teach | Field test | Open | Open |
 | Re-measure on a larger memory base | Evidence | Open | Not started |
 
-## Done — 2, kept for the record
+## Done — 3, kept for the record
 
 | Task | Initiative | Done |
 |---|---|---|
+| Cowork build | [Harnesses](initiatives/harnesses.md) | 2026-09-21 |
 | Make the repository public | [Publication](initiatives/publication.md) | 2026-09-21 |
 | Create the repository with the front door and the example | [Publication](initiatives/publication.md) | 2026-09-19 |
