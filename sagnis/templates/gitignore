@@ -1,0 +1,13 @@
+# Master space: only the assistant's context is tracked.
+# Transcripts, sessions, settings, caches stay local.
+*
+!.gitignore
+!.gitattributes
+!audit-manifest.jsonl
+!README.md
+!AGENTS.md
+!CLAUDE.md
+!knowledge/
+!knowledge/**
+!skills/
+!skills/**
