@@ -3,7 +3,6 @@
 *
 !.gitignore
 !.gitattributes
-!audit-manifest.jsonl
 !README.md
 !AGENTS.md
 !CLAUDE.md
