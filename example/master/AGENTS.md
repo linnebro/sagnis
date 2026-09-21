@@ -14,10 +14,10 @@ files never go there.
 |---|---|
 | Memory, all topics | `knowledge/MEMORY.md` (generated: Recent + Routes) → the topic `INDEX.md` a route names → the one fact that matters, or the mirror index of the human folder the task touches |
 | Journal | `knowledge/journal/YYYY-MM-DD-HHMM-<slug>.md`, one file per session; `journal.md` is the generated rollup |
-| This repo | private `<private repo url>`, rooted at `~/.claude` (tracks AGENTS.md, knowledge/, skills/) |
+| This repo | a private remote, rooted at `~/.claude` (tracks AGENTS.md, knowledge/, skills/) |
 | Fernwood Landscaping working files | `~/Projects/Fernwood Landscaping` (git repo; its AGENTS.md is a shim; the model's index of it is `knowledge/fernwood-landscaping/`: mirror indexes, TASKS.md, LOG.md, RULES.md) |
 | New project | run `init_workspace.py` again with the new `--project` and `--name`: it makes `knowledge/<name>/` here (TOPIC.md, repo/INDEX.md, then mirror indexes as folders earn them) and the shim in the project folder |
-| The operating model | `skills/sagnis/`: SKILL.md is the session procedure |
+| Sagnis | `skills/sagnis/`: SKILL.md is the session procedure |
 
 ## Memory conventions
 

@@ -21,8 +21,8 @@ task, never a whole folder.
 - `Outreach/` — letters and the quote-request inbox; drafts only, Maya sends
 - `Quotes/` — one folder per quoted job; see [quotes/INDEX.md](../quotes/INDEX.md)
 - `Routes/` — `route-sheet.csv`, the customer list of record for scheduling
-- `Templates/` — `quote.md`, `site-visit.md`; edit these, never the output
-- `Website/` — `copy.md` (draft), `photos/`
+- `Templates/` — `quote.md`, `site-visit.md`; a format change starts here
+- `Website/` — `copy.md`, the service-page draft waiting on Maya
 
 ## Root files
 - `AGENTS.md` / `CLAUDE.md` — the shim: read order into the AI workspace, `@import` of `RULES.md`

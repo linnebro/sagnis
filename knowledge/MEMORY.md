@@ -10,9 +10,9 @@ this file or an INDEX.md by hand.
 ## Recent — last 10 facts touched (git commit date) and last 3 journal entries
 
 
-- 2026-09-21 11:00 sagnis / renamed from ai-operating-model — Project renamed to Sagnis and the category fixed to context system: package folder, in-repo topic, README, GETTING-STARTED, contributing guide, issue template and the example workspace all follow. Next: Scrub the package for anything naming a real business, then make the repository public
 - 2026-09-21 12:00 sagnis / scrub and publication — All 129 files read for anything naming a real person, business, client, path or machine; the internal build plan and the six raw measurement files deleted rather than sanitized; repository made public. Next: Fold in what the first outside installs teach; re-measure on a larger memory base
 - 2026-09-21 14:00 sagnis / narrowed to two tiers — Tier 3 removed whole: seven scripts, five references, the thesis and the intake, the router and its config. What ships is memory, routing, state, guardrails, and the scripts-over-agents rule. 104 files, five scripts, all selftests green. Next: Squash to one commit and recreate the repository so the cut is not reachable from history; then fix the example's known fiction bugs
+- 2026-09-21 15:00 sagnis / example fiction bugs fixed — The five inconsistencies in the Fernwood example are closed: quotes are filled from the template rather than by a generator that did not exist, Website/copy.md and the two described quote folders now ship, the Hollis site visit moved to a Thursday, and the route sheet is labelled a sample. Next: Fold in what the first outside installs teach; re-measure on a larger memory base
 
 ## Routes
 

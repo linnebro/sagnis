@@ -13,7 +13,7 @@ scaffold at tier 2, then filled by hand. Paths inside it read `~/.claude` and
 
 ## Folders
 - `master/` — the AI workspace: `AGENTS.md` (+ `CLAUDE.md` shim), `.gitignore`, `.gitattributes`, `knowledge/` with `MEMORY.md` (generated), `general/` (6 facts), `fernwood-landscaping/` (9 facts, `RULES.md`, `LOG.md`, `initiatives/` with 3 files, generated `TASKS.md` and `INDEX.md`, mirror indexes `repo/` and `quotes/`), `ideas/` (1), `archive/` (1), `journal/` (3 entries) and the generated `journal.md`
-- `projects/Fernwood Landscaping/` — the human folder: `AGENTS.md` shim (+ `CLAUDE.md`), `README.md`, `.gitignore`, `Automations/` (README and a `build_route_sheet.py` placeholder), `Templates/`, `Routes/`, `Quotes/2026-09-hollis-patio/`, `Outreach/`
+- `projects/Fernwood Landscaping/` — the human folder: `AGENTS.md` shim (+ `CLAUDE.md`), `README.md`, `.gitignore`, `Automations/` (README and a `build_route_sheet.py` placeholder), `Templates/`, `Routes/`, `Quotes/` (three job folders: Hollis open, Ferris lost, Marlow won), `Outreach/`, `Website/`
 
 ## What to look at first
 - `master/knowledge/MEMORY.md` — what a session loads: Recent + Routes, nothing else

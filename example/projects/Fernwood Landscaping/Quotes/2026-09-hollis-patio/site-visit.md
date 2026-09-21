@@ -1,4 +1,4 @@
-# Site visit — Hollis, 2026-09-11
+# Site visit — Hollis, 2026-09-10
 
 - Base depth: 8 in
 - Drainage direction: away from the house, to the east bed

@@ -6,14 +6,69 @@ Generated from `journal/*.md`, newest first: one line per session, then every
 entry whole. Add a session as a new file there (see templates/journal-entry.md),
 then regenerate. Never edit this file.
 
-## Sessions (4)
+## Sessions (5)
 
+- 2026-09-21 15:00 sagnis / example fiction bugs fixed — The five inconsistencies in the Fernwood example are closed: quotes are filled from the template rather than by a generator that did not exist, Website/copy.md and the two described quote folders now ship, the Hollis site visit moved to a Thursday, and the route sheet is labelled a sample. Next: Fold in what the first outside installs teach; re-measure on a larger memory base
 - 2026-09-21 14:00 sagnis / narrowed to two tiers — Tier 3 removed whole: seven scripts, five references, the thesis and the intake, the router and its config. What ships is memory, routing, state, guardrails, and the scripts-over-agents rule. 104 files, five scripts, all selftests green. Next: Squash to one commit and recreate the repository so the cut is not reachable from history; then fix the example's known fiction bugs
 - 2026-09-21 12:00 sagnis / scrub and publication — All 129 files read for anything naming a real person, business, client, path or machine; the internal build plan and the six raw measurement files deleted rather than sanitized; repository made public. Next: Fold in what the first outside installs teach; re-measure on a larger memory base
 - 2026-09-21 11:00 sagnis / renamed from ai-operating-model — Project renamed to Sagnis and the category fixed to context system: package folder, in-repo topic, README, GETTING-STARTED, contributing guide, issue template and the example workspace all follow. Next: Scrub the package for anything naming a real business, then make the repository public
 - 2026-09-19 15:00 ai-operating-model / repository created — Private repository created: the package as a subfolder, README and GETTING-STARTED as the front door, a fictional example workspace at tier 3, this in-repo workspace, MIT licence, contributing guide and issue templates. Next: Scrub the package of everything naming a real business, then publish
 
 ## Entries
+
+### 2026-09-21 15:00 — sagnis / example fiction bugs fixed  ·  `journal/2026-09-21-1500-example-fiction-fixed.md`
+
+## What was wrong
+
+Three memory files described a quote generator that `Automations/` never
+implemented. Three files pointed at a `Website/` folder and two quote folders that
+were not in the tree. The Hollis site visit was dated a Friday, a mowing day, against
+the schedule rule the fiction states twice. The route sheet had three rows while the
+campaign fact called it the list of forty customers. All found in the pre-publication
+audit and deferred because none of it was a privacy problem.
+
+## What changed
+
+**No generator.** A two-person landscaping company fills a one-page quote from a
+template; it does not need a script for it. The quote-format fact, the quotes
+mirror index and the repo index now say quotes are filled from `Templates/quote.md`
+and that a format change starts in the template and then goes into any open quote.
+The general rule that generated documents are edited at their generator stays,
+because the route sheet is generated. The cover-note file the index promised was
+dropped from the description rather than invented three times over.
+
+**The folders exist.** `Website/copy.md` is a short service-page draft in Maya's
+voice, waiting on her read as the initiative says. `2026-09-ferris-wall-lost/` and
+`2026-08-marlow-walkway-won/` each hold a filled site-visit sheet and a quote in the
+template's exact shape. The Ferris sheet carries the story beat: the first quote
+went out without the checklist and with hours listed, and the hours became the
+conversation. The photos moved out of the repo in the fiction, since binary photos
+do not belong in an example.
+
+**Thursday.** Hollis site visit 2026-09-10, quote sent that evening. Ferris first
+quoted 2026-09-03 (Thursday), redone 2026-09-10 after a proper visit. Marlow visited
+2026-08-18 (Tuesday). Every hardscape date now lands on a Tuesday or Thursday,
+checked with the calendar rather than by eye. Task due dates on mowing days were
+left alone: a deadline is not a scheduled visit.
+
+**Labelled sample.** The project README, the one file written for the person rather
+than the model, says the route sheet holds three sample rows.
+
+## Folded in from the audit's small list
+
+The master-space instruction file had an unfilled `<private repo url>` placeholder
+and a row label that still said "The operating model"; both fixed. The route-sheet
+stub promised a logs folder that does not exist; the promise is gone from both the
+docstring and the README. The gitignore template still whitelisted the audit
+manifest, a file the narrowed package no longer produces; removed from the template
+and the example copy, which also makes the example's git-conventions fact accurate
+again.
+
+## Verified
+
+Both scaffold and index selftests pass with the changed template. Both workspaces
+regenerate and `--check` clean. A search for the old wording finds nothing outside
+the one general rule that is still true.
 
 ### 2026-09-21 14:00 — sagnis / narrowed to two tiers  ·  `journal/2026-09-21-1400-narrowed-to-two-tiers.md`
 

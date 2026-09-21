@@ -10,11 +10,11 @@ Tasks: [TASKS.md](TASKS.md) — generated roster, 5 open in 3 initiatives (detai
 - 2026-09-21 [Crew schedule](user_crew_schedule.md) — Mon north route, Wed river road, Fri town; rain day rolls to Saturday; no admin on crew days
 
 ## feedback
-- 2026-09-21 [Quote format](feedback_quote_format.md) — one page, three sections (scope, price, what is not included), no hourly breakdown, dates in words; generated from Templates/quote.md, never edited in the output
+- 2026-09-21 [Quote format](feedback_quote_format.md) — one page, three sections (scope, price, what is not included), no hourly breakdown, dates in words; filled from Templates/quote.md, and a format change starts in the template
 - 2026-09-21 [Never round crew hours](feedback_never_round_hours.md) — timesheets keep the quarter-hour as logged; rounding happens in payroll, not in the sheet
 
 ## project (a fact untouched 30+ days shows its title only; the hook is in the file)
-- 2026-09-21 [Website refresh](project_website_refresh.md) — in progress since 2026-09-10: new photos are in Website/photos, copy draft in Website/copy.md awaits Maya's read; go-live target 2026-10-15; hosting stays where it is
+- 2026-09-21 [Website refresh](project_website_refresh.md) — in progress since 2026-09-10: new photos taken, copy draft in Website/copy.md awaits Maya's read; go-live target 2026-10-15; hosting stays where it is
 - 2026-09-21 [Spring cleanup campaign 2027](project_spring_cleanup_campaign.md) — decided 2026-09-15: 40 returning customers get a cleanup offer by 2027-02-15; route sheet first, then the letter; Dev handles the north-side calls
 
 ## reference
