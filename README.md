@@ -59,9 +59,11 @@ after: how to seed a memory base from work you already have.
 | Claude Code | `AGENTS.md` via a two-line `CLAUDE.md` shim | yes | verified, the reference setup |
 | OpenAI Codex CLI | `AGENTS.md` natively | yes | untested |
 | Cursor, Copilot, Windsurf, Gemini CLI | `AGENTS.md` natively | mostly | untested |
+| Microsoft 365 Copilot Cowork | a Preferences block ([sagnis/cowork/](sagnis/cowork/README.md)) | yes, from OneDrive | untested; indexes kept by hand, no git, no shell |
 
 Everything works from the files alone. Nothing here depends on a hook, a plugin
-or a feature of one assistant.
+or a feature of one assistant. The Cowork build is the proof: same folders, same
+index shapes, on a harness that cannot run a script.
 
 ## What is in here
 
@@ -72,6 +74,8 @@ sagnis/     the installable package: copy this folder into ~/.claude/skills/ (or
   scripts/              stdlib Python, every script has a selftest
   templates/            what the scaffold renders, by tier
   references/           why each rule exists
+  cowork/               the same system for Microsoft 365 Copilot Cowork: a Preferences block, a starter
+                        OneDrive folder with hand-kept indexes, and the skill in Cowork terms
 GETTING-STARTED.md      one path per tier, then the first week
 example/                a complete fictional workspace: a master space with 17 memory files and a
                         populated index, and the project folder it describes

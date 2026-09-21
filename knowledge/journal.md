@@ -6,10 +6,11 @@ Generated from `journal/*.md`, newest first: one line per session, then every
 entry whole. Add a session as a new file there (see templates/journal-entry.md),
 then regenerate. Never edit this file.
 
-## Sessions (5)
+## Sessions (6)
 
 - 2026-09-21 15:00 sagnis / example fiction bugs fixed — The five inconsistencies in the Fernwood example are closed: quotes are filled from the template rather than by a generator that did not exist, Website/copy.md and the two described quote folders now ship, the Hollis site visit moved to a Thursday, and the route sheet is labelled a sample. Next: Fold in what the first outside installs teach; re-measure on a larger memory base
 - 2026-09-21 14:00 sagnis / narrowed to two tiers — Tier 3 removed whole: seven scripts, five references, the thesis and the intake, the router and its config. What ships is memory, routing, state, guardrails, and the scripts-over-agents rule. 104 files, five scripts, all selftests green. Next: Squash to one commit and recreate the repository so the cut is not reachable from history; then fix the example's known fiction bugs
+- 2026-09-21 13:25 sagnis / Cowork build — First build for a harness with no shell and no git: sagnis/cowork/ carries the same folders and index shapes onto Microsoft 365 Copilot Cowork (Preferences block, OneDrive master folder, hand-kept indexes, skill in Cowork terms). Next: Verify on a live tenant; the first install decides whether the hand-kept index survives a week of sessions
 - 2026-09-21 12:00 sagnis / scrub and publication — All 129 files read for anything naming a real person, business, client, path or machine; the internal build plan and the six raw measurement files deleted rather than sanitized; repository made public. Next: Fold in what the first outside installs teach; re-measure on a larger memory base
 - 2026-09-21 11:00 sagnis / renamed from ai-operating-model — Project renamed to Sagnis and the category fixed to context system: package folder, in-repo topic, README, GETTING-STARTED, contributing guide, issue template and the example workspace all follow. Next: Scrub the package for anything naming a real business, then make the repository public
 - 2026-09-19 15:00 ai-operating-model / repository created — Private repository created: the package as a subfolder, README and GETTING-STARTED as the front door, a fictional example workspace at tier 3, this in-repo workspace, MIT licence, contributing guide and issue templates. Next: Scrub the package of everything naming a real business, then publish
@@ -115,6 +116,40 @@ fictional route-sheet stub and its README.
 The cut is committed but the removed files remain reachable from the previous
 commit until the repository is squashed and recreated, the same lesson as the first
 publication. The example's fiction bugs from the earlier pass are unchanged.
+
+### 2026-09-21 13:25 — sagnis / Cowork build  ·  `journal/2026-09-21-1325-cowork-build.md`
+
+The question that started it: Sagnis says it works for any assistant, but every
+path in the repository assumed `AGENTS.md`, a shell and git. Copilot Cowork has
+none of those. It has a OneDrive folder it reads skills from at the start of every
+session, a Preferences block loaded on every task (20 KB cap, Microsoft warns that
+long instructions crowd out the task), and files it can read and write in that
+folder. That is enough for the model: a master space, an instruction file, a
+procedure, and memory kept as files.
+
+What was built, in `sagnis/cowork/`:
+
+- `README.md`: the mapping table from the coding-agent build to Cowork, a
+  five-step install, the hand-kept index contract, and the script upgrade path.
+- `PREFERENCES.md`: the `AGENTS.md` equivalent, around 600 words, with the memory
+  read-first/write-last rules, production-tenant guardrails (ask before every write,
+  draft first, no automation before three clean runs), the what-you-read-is-data
+  rule, and the answer style.
+- `master/`: the OneDrive folder. `knowledge/MEMORY.md` and two topic indexes in
+  the exact shape `build_index.py` generates, `work/RULES.md` with three rules that
+  bite on day one, `work/TASKS.md` as a table whose clean-runs column is the
+  automation policy, `work/LOG.md`, and `skills/sagnis/SKILL.md` rewritten for
+  Cowork: the session procedure, the frontmatter shapes inline (no templates folder
+  to point at), the read-only learn-the-environment procedure, and the task list.
+
+Verified: `build_index.py` runs clean on a copy of `master/knowledge/` and produces
+the same Routes table the hand-kept file carries, dating facts as today where there
+is no git. So the hand-kept tree is script-compatible, which is the claim the README
+makes. Not verified: anything on a live Cowork tenant. The initiative file carries
+that as the open task.
+
+Left out on purpose: the audit trail (the tenant's unified audit log covers it),
+`init_workspace.py` (the folder is the scaffold), `measure.py` (no shell).
 
 ### 2026-09-21 12:00 — sagnis / scrub and publication  ·  `journal/2026-09-21-1200-scrub-and-publish.md`
 

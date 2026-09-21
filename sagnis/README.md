@@ -49,6 +49,11 @@ cp -r sagnis ~/.codex/skills/
 two-line `CLAUDE.md` shim beside it (`--tool claude`). Every other assistant that
 reads `AGENTS.md` needs nothing else.
 
+**Microsoft 365 Copilot Cowork**
+
+No shell and no git there, so the install is a folder copy into OneDrive and a
+Preferences block: `cowork/README.md`.
+
 ## Before installing: your own number
 
 ```
@@ -86,6 +91,7 @@ references/layout.md       the two-space folder structure
 references/guardrails.md   starter rules + how the list grows
 references/scripts-not-agents.md   the delegation ladder
 templates/                 AGENTS.md (global), REPO-AGENTS.md (shim), INDEX, RULES, LOG, TOPIC, initiative, standing-rules, journal-entry, memory-file, gitignore, gitattributes
+cowork/                    the Copilot Cowork build: README (what maps to what), PREFERENCES.md (paste-ready), master/ (the OneDrive folder: hand-kept MEMORY.md and topic indexes, RULES, TASKS, LOG, the skill)
 scripts/measure.py         what a workspace costs a model to load; the before-and-after instrument
 scripts/init_workspace.py  scaffold by tier, generates the indexes on the way out (has --selftest)
 scripts/build_index.py     GENERATES knowledge/MEMORY.md (Recent + Routes) and every topic INDEX.md; --check, --migrate, --titles
