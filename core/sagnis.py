@@ -275,6 +275,10 @@ def documents(root):
                             docs[pre + "LOG.md " + l[:160]] = "decided decision log " + l
                 else:
                     docs[pre + s] = s[:-3].lower() + " " + text
+        for d in os.listdir(tdir):                       # folder indexes: where documents live
+            ip = os.path.join(tdir, d, "INDEX.md")
+            if os.path.isdir(os.path.join(tdir, d)) and d not in SKIP_DIRS and os.path.exists(ip):
+                docs[f"{pre}{d}/INDEX.md"] = d.replace("-", " ") + " " + read(ip)
     return docs
 
 
@@ -306,9 +310,9 @@ def find(root, query, top=5):
     for score, p in bm25(docs, query)[:top]:
         if " " in p:                                    # a LOG line
             lines.append(p)
-        elif p.endswith(".md") and os.path.basename(p).split("_")[0] in TYPES:
+        elif os.path.basename(p).split("_")[0] in TYPES or p.endswith("/INDEX.md"):
             fields = parse(read(os.path.join(root, p)))[0]
-            lines.append(f"{p}  — {fields.get('description', '')}")
+            lines.append(f"{p}  — {fields.get('description', '')}".rstrip(" —"))
         else:
             lines.append(p)
     return lines
@@ -416,6 +420,7 @@ def selftest():
         write(os.path.join(d, "MEMORY.md"), "# Routes\n- general: nothing yet\n")
         assert build(d, check=True)[2] == ["routes: topic 'people' is not named in MEMORY.md"]
         assert find(d, "NetScout owner")[0].startswith("people/user_nick.md")
+        assert find(d, "where is the team wiki")[0].startswith("people/repo/INDEX.md  — the team wiki")
         print("SELFTEST OK")
         return 0
     finally:
