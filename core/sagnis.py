@@ -198,8 +198,8 @@ def save(root, topic, typ, slug, title, description, source, body, updated=None,
     tdir = topic_dir(root, topic)
     if typ not in TYPES:
         raise ValueError(f"type must be one of {TYPES}")
-    if not re.fullmatch(r"[a-z0-9][a-z0-9-]*", slug):
-        raise ValueError("slug: lower-case letters, digits and hyphens")
+    if not re.fullmatch(r"[a-z0-9][a-z0-9_-]*", slug):       # underscores: facts migrated from older layouts
+        raise ValueError("slug: lower-case letters, digits, hyphens and underscores")
     fields = {"title": " ".join(title.split()), "description": " ".join(description.split()),
               "source": " ".join(source.split()), "updated": updated or datetime.date.today().isoformat(),
               "keywords": " ".join(keywords.split())}
@@ -400,6 +400,9 @@ def selftest():
             raise AssertionError("long description must be refused")
         except ValueError:
             pass
+        save(d, "", "project", "old_style", "Old", "an underscore slug updates in place", "s", "b")
+        assert os.path.exists(os.path.join(d, "project_old_style.md"))
+        delete(d, "", "project_old_style.md")
         log(d, "", "Atlas is out of scope (Steve, 2026-09-20)", "2026-09-20")
         log(d, "", "Weekly IT moved to Thursdays", "2026-09-22")
         lg = read(os.path.join(d, "LOG.md")).splitlines()
