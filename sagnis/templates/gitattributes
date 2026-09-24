@@ -1,6 +1,0 @@
-# Generated files: two devices regenerating the same day must not hard-conflict.
-# union merge leaves a wrong-but-mergeable file; build_index.py --check flags it
-# and a regenerate fixes it. Never hand-merge these.
-knowledge/MEMORY.md merge=union
-knowledge/journal.md merge=union
-knowledge/*/INDEX.md merge=union
