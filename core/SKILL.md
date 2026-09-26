@@ -32,3 +32,10 @@ does every index; never edit an `INDEX.md` by hand.
 
 Save what I told you, decided or corrected, and what cost time to find. Do not save
 what my files, my repo or these instructions already record.
+
+## When a piece of work is done
+
+Once it is saved, tell me it is a good point to start a new chat, unless the next step
+is still in flight. A long chat costs more each turn and drifts: early details get
+lost to summarizing, and gaps get filled with guesses. A fresh chat reads the saved
+facts instead.
