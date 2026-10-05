@@ -26,14 +26,14 @@ A fact file, the only thing written by hand (or by `save`):
 File name: <type>_<slug>.md, type one of user | feedback | project | reference.
 Layout: facts directly under the root (one index), or one folder per topic (one
 index each). A subfolder with an INDEX.md and no facts is a folder index and is
-listed, not walked. notes/, scripts/ and initiatives/ are skipped. A fact stays about
+listed, not walked (a notes/ folder with an INDEX.md is one). scripts/ and initiatives/ are skipped. A fact stays about
 150 words; the long record behind it goes in notes/<slug>.md and the fact names it.
 """
 import argparse, collections, datetime, math, os, re, sys
 
 TYPES = ["user", "project", "feedback", "reference"]
 STATE = ["TASKS.md", "RULES.md"]
-SKIP_DIRS = {"notes", "journal", "scripts", "initiatives", "__pycache__"}
+SKIP_DIRS = {"journal", "scripts", "initiatives", "__pycache__"}
 MAX_DESC = 120
 LINE = re.compile(r"^- (\d{4}-\d{2}-\d{2}) \[(.+?)\]\((.+?)\) — (.+)$")
 STOP = set("a an the of to in on for is are was were and or what which who whom how do does did i my me "
