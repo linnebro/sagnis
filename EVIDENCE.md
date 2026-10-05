@@ -69,8 +69,43 @@ decision question answered from `LOG.md`; on an untouched copy of that corpus `b
 --check` reports no drift, so the generated indexes are byte-identical to the tested
 build's.
 
+## 3. The first month of use: 206 sessions (2026-09-23 to 2026-10-04)
+
+The original setup ran the published shape for eleven days. Every session transcript
+over 50 KB was then read for what the assistant actually did with the memory.
+
+| | Sessions |
+|---|---:|
+| All sessions | 206 |
+| In the business repository (where the work is) | 105 |
+| ...that ran the script at all | 0 |
+| ...that opened a fact or a topic index | about 6 |
+| ...that searched the repository for a fact instead | 42 |
+| In the memory workspace itself (saving, indexing, upkeep) | 100 |
+| Facts saved through `save` | 11 sessions |
+| Journal files written | 43 sessions, 155 files, 38,000 words, read by nothing |
+
+What got read was the injected layer: the instructions file, the routes line, the rules
+file the repository imports, and the few `feedback_` facts a session was pointed at. The
+design asked the assistant to route from the instructions to a topic index to a fact on
+its own, and in the business repository it skipped that hop 99 times in 105 and grepped
+instead. Facts that are not in context are an archive, not a memory.
+
+Three other things the month showed. The facts had grown: median 274 words, seventeen
+over 500, the largest 3,379, so "one fact per file" had become "one document per file".
+Four overlapping records of state existed (task roster, decision log, journal, a status
+page), rewritten four times in one day. And of nine scripts, one was wired to anything.
+
+Changes made the same day, all now the published shape: the topic index is imported
+into the instructions file rather than pointed at; a fact is about 150 words with the
+long record in `notes/`; the journal and the decision log are gone, with commit
+messages as the record; one task surface; and `budget` exists so the injected set has
+a number. Half the sessions of the month were upkeep of the memory itself; that is the
+cost the cuts are meant to remove. Whether they do is the next measurement.
+
 ## What this does not show
 
 One operator each; questions written by the same assistant that built the memory;
-one model. The first week of real questions on either setup is the test that matters,
-and `keywords` plus the miss log exist so that week improves the next.
+one model. The usage count in section 3 is a count of tool calls in transcripts, not a
+measure of answer quality. The first week of real questions on a new setup is the test
+that matters, and `keywords` exists so that week improves the next.

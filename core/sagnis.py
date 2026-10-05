@@ -6,10 +6,10 @@ everything that is formatting or bookkeeping, so the model's only job is content
 
   save      write or update one fact, regenerate its index
   delete    remove a fact, regenerate its index
-  log       add one dated line to LOG.md, newest first
   keywords  add search words to a fact (the miss log: the words someone asked with)
   build     regenerate every INDEX.md from the facts; --check reports drift and writes nothing
-  find      search every fact and decision; prints the top lines, then the model opens one fact
+  find      search every fact; prints the top lines, then the model opens one fact
+  budget    tokens of what a session reads before any work: the files given plus their @imports
   --selftest
 
 A fact file, the only thing written by hand (or by `save`):
@@ -26,13 +26,14 @@ A fact file, the only thing written by hand (or by `save`):
 File name: <type>_<slug>.md, type one of user | feedback | project | reference.
 Layout: facts directly under the root (one index), or one folder per topic (one
 index each). A subfolder with an INDEX.md and no facts is a folder index and is
-listed, not walked. journal/, scripts/ and initiatives/ are skipped.
+listed, not walked. notes/, scripts/ and initiatives/ are skipped. A fact stays about
+150 words; the long record behind it goes in notes/<slug>.md and the fact names it.
 """
 import argparse, collections, datetime, math, os, re, sys
 
 TYPES = ["user", "project", "feedback", "reference"]
-STATE = ["TASKS.md", "LOG.md", "RULES.md"]
-SKIP_DIRS = {"journal", "scripts", "initiatives", "__pycache__"}
+STATE = ["TASKS.md", "RULES.md"]
+SKIP_DIRS = {"notes", "journal", "scripts", "initiatives", "__pycache__"}
 MAX_DESC = 120
 LINE = re.compile(r"^- (\d{4}-\d{2}-\d{2}) \[(.+?)\]\((.+?)\) — (.+)$")
 STOP = set("a an the of to in on for is are was were and or what which who whom how do does did i my me "
@@ -220,17 +221,6 @@ def delete(root, topic, fname):
     return [regen(tdir, topic)]
 
 
-def log(root, topic, text, date=None):
-    tdir = topic_dir(root, topic)
-    p = os.path.join(tdir, "LOG.md")
-    body = read(p) if os.path.exists(p) else f"# {topic or 'Memory'}: decisions\n\n"
-    lines = body.splitlines()
-    first = next((i for i, l in enumerate(lines) if l.startswith("- **")), len(lines))
-    lines.insert(first, f"- **{date or datetime.date.today().isoformat()}** — {' '.join(text.split())}")
-    write(p, "\n".join(lines).rstrip() + "\n")
-    return [p, regen(tdir, topic)]           # the index gains the LOG link on the first decision
-
-
 def add_keywords(root, topic, fname, words):
     tdir = topic_dir(root, topic)
     fpath = os.path.join(tdir, fname)
@@ -256,7 +246,7 @@ def toks(s):
 
 
 def documents(root):
-    """{label: text}: every fact (fields + body + file name), every LOG line, each state file whole."""
+    """{label: text}: every fact (fields + body + file name), each state file whole, each folder index."""
     docs = {}
     for tdir, name in topics(root):
         pre = name + "/" if name else ""
@@ -268,13 +258,7 @@ def documents(root):
         for s in STATE:
             p = os.path.join(tdir, s)
             if os.path.exists(p):
-                text = read(p)
-                if s == "LOG.md":
-                    for l in text.splitlines():
-                        if l.startswith("- **"):
-                            docs[pre + "LOG.md " + l[:160]] = "decided decision log " + l
-                else:
-                    docs[pre + s] = s[:-3].lower() + " " + text
+                docs[pre + s] = s[:-3].lower() + " " + read(p)
         for d in os.listdir(tdir):                       # folder indexes: where documents live
             ip = os.path.join(tdir, d, "INDEX.md")
             if os.path.isdir(os.path.join(tdir, d)) and d not in SKIP_DIRS and os.path.exists(ip):
@@ -308,14 +292,39 @@ def find(root, query, top=5):
     docs = documents(root)
     lines = []
     for score, p in bm25(docs, query)[:top]:
-        if " " in p:                                    # a LOG line
-            lines.append(p)
-        elif os.path.basename(p).split("_")[0] in TYPES or p.endswith("/INDEX.md"):
+        if os.path.basename(p).split("_")[0] in TYPES or p.endswith("/INDEX.md"):
             fields = parse(read(os.path.join(root, p)))[0]
             lines.append(f"{p}  — {fields.get('description', '')}".rstrip(" —"))
         else:
             lines.append(p)
     return lines
+
+
+# ---- budget -------------------------------------------------------------------------------------
+
+def budget(paths, seen=None):
+    """[(path, tokens)] for each file and, recursively, each `@path` import it names at the start
+    of a line (Claude Code's import form; other tools read the line as a pointer). 4 chars = 1 token."""
+    seen = seen if seen is not None else set()
+    out = []
+    for raw in paths:
+        p = os.path.abspath(os.path.expanduser(raw))
+        if p in seen:
+            continue
+        seen.add(p)
+        if not os.path.isfile(p):
+            out.append((raw, None))
+            continue
+        text = read(p)
+        out.append((raw, len(text) // 4))
+        for line in text.splitlines():
+            m = re.match(r"^@(\S+)\s*$", line)
+            if m:
+                target = os.path.expanduser(m.group(1))
+                if not os.path.isabs(target):
+                    target = os.path.join(os.path.dirname(p), target)
+                out += budget([target], seen)
+    return out
 
 
 # ---- cli ----------------------------------------------------------------------------------------
@@ -338,13 +347,13 @@ def main(argv=None):
     g = s.add_mutually_exclusive_group(required=True)
     g.add_argument("--body"); g.add_argument("--body-file")
     common(sub.add_parser("delete", help="remove a fact"), "file")
-    lg = sub.add_parser("log", help="one dated decision line in LOG.md")
-    common(lg, "text"); lg.add_argument("--date")
     common(sub.add_parser("keywords", help="add search words to a fact"), "file", "words")
     b = sub.add_parser("build", help="regenerate every INDEX.md")
     b.add_argument("--root", required=True); b.add_argument("--check", action="store_true")
-    f = sub.add_parser("find", help="search every fact and decision")
+    f = sub.add_parser("find", help="search every fact")
     f.add_argument("--root", required=True); f.add_argument("query"); f.add_argument("--top", type=int, default=5)
+    bu = sub.add_parser("budget", help="tokens a session reads before any work: these files plus their @imports")
+    bu.add_argument("files", nargs="+"); bu.add_argument("--max", type=int, default=2000, help="exit 1 above this total")
     a = ap.parse_args(argv)
 
     if a.selftest:
@@ -362,13 +371,18 @@ def main(argv=None):
             lines = find(a.root, a.query, a.top)
             print("\n".join(lines) if lines else "NO MATCH: not in memory, or the words differ; try the topic index")
             return 0
+        if a.cmd == "budget":
+            rows = budget(a.files)
+            total = sum(t or 0 for _, t in rows)
+            for path, t in rows:
+                print(f"{'MISSING' if t is None else t:>8}  {path}")
+            print(f"{total:>8}  total, budget {a.max}: {'OK' if total <= a.max else 'OVER'}")
+            return 0 if total <= a.max else 1
         if a.cmd == "save":
             body = a.body if a.body is not None else read(a.body_file)
             out = save(a.root, a.topic, a.type, a.slug, a.title, a.description, a.source, body, a.updated, a.keywords)
         elif a.cmd == "delete":
             out = delete(a.root, a.topic, a.file)
-        elif a.cmd == "log":
-            out = log(a.root, a.topic, a.text, a.date)
         else:
             out = add_keywords(a.root, a.topic, a.file, a.words)
         print("\n".join(p.replace(os.sep, "/") for p in out))   # the files that changed: the upload list in Cowork
@@ -403,12 +417,17 @@ def selftest():
         save(d, "", "project", "old_style", "Old", "an underscore slug updates in place", "s", "b")
         assert os.path.exists(os.path.join(d, "project_old_style.md"))
         delete(d, "", "project_old_style.md")
-        log(d, "", "Atlas is out of scope (Steve, 2026-09-20)", "2026-09-20")
-        log(d, "", "Weekly IT moved to Thursdays", "2026-09-22")
-        lg = read(os.path.join(d, "LOG.md")).splitlines()
-        assert lg[2].startswith("- **2026-09-22**") and lg[3].startswith("- **2026-09-20**"), lg
-        assert "[Log](LOG.md)" in read(os.path.join(d, "INDEX.md"))
-        assert find(d, "what did we decide about Atlas")[0].startswith("LOG.md ")
+        write(os.path.join(d, "RULES.md"), "# Rules\n- Atlas is out of scope (Steve, 2026-09-20)\n")
+        build(d); assert "[Rules](RULES.md)" in read(os.path.join(d, "INDEX.md"))
+        assert find(d, "is Atlas in scope")[0] == "RULES.md", find(d, "is Atlas in scope")
+        os.makedirs(os.path.join(d, "notes"))
+        write(os.path.join(d, "notes", "long.md"), "# long\nproject_nothing_here.md is not a fact\n")
+        assert "notes" not in read(os.path.join(d, "INDEX.md")) and build(d, check=True)[0] == []
+        # budget: files plus their @imports, counted once
+        write(os.path.join(d, "AGENTS.md"), "# rules\n@INDEX.md\n@people/INDEX.md\n@INDEX.md\n")
+        rows = budget([os.path.join(d, "AGENTS.md")])
+        assert [os.path.basename(r[0]) for r in rows][:2] == ["AGENTS.md", "INDEX.md"] and rows[-1][1] is None, rows
+        assert all(t is None or t == len(read(os.path.abspath(os.path.expanduser(pth)))) // 4 for pth, t in rows)
         add_keywords(d, "", "reference_arctic-wolf.md", "MDR, SOC, arcticwolf")
         assert "arcticwolf" in parse(read(os.path.join(d, "reference_arctic-wolf.md")))[0]["keywords"]
         assert find(d, "arcticwolf")[0].startswith("reference_arctic-wolf.md")

@@ -16,7 +16,7 @@ index is what the script generates.
   standard library. One file; if it needs a second, that is a discussion first.
 - **A change to the core** (the skill, the fact format, what `build` writes) needs a
   reason a stranger can check, and must not add a file to the install. Anything
-  optional is an add-on in `ADDONS.md`, with its trigger.
+  optional stays out until a measured miss earns it (see `EVIDENCE.md`).
 - **The example** is regenerated with `save`, never hand-edited. Fernwood Landscaping
   is fictional; keep it that way.
 - **A claim in `EVIDENCE.md`** names what was measured, how, and what it does not show.

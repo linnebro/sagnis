@@ -1,7 +1,5 @@
 # Memory
 
-[Log](LOG.md)
-
 ## user
 - 2026-09-01 [Crew schedule](user_crew-schedule.md) — Mon north route, Wed river road, Fri town; a rain day rolls to Saturday; no admin on crew days
 
