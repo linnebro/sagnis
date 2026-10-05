@@ -1,79 +1,93 @@
 # Sagnis
 
-**A file-based memory for an AI assistant: one fact per file behind a generated
-index, so it opens the one right fact instead of re-reading or re-searching, and
-does not forget what it was told.**
+**A small memory for an AI coding assistant: one fact per file, a generated index
+imported into the instructions it already reads, and a script that keeps the two in
+step. The assistant stops re-reading your repo for things you told it, and stops
+forgetting your corrections.**
 
-Three files. Python 3, standard library, no accounts, no dependencies. Works with any
-assistant that can read a folder and run a script: Claude Code, Codex, Cursor,
-Microsoft 365 Copilot Cowork ([cowork/](cowork/README.md)).
+One script, Python 3 standard library, no accounts, no dependencies. Works with any
+assistant that reads an `AGENTS.md` or `CLAUDE.md` and can run a script: Claude Code,
+Codex, Cursor.
 
 ## The problem
 
-You tell the assistant how you want something done; next session it has forgotten. It
-reads forty files to find one fact and sometimes picks the wrong one. It relitigates a
-decision you settled last month. A bigger instructions file or memory document makes
-every session slower and no more accurate, because the fact it needs is now buried in
-more text.
+You tell the assistant how you want something done; next session it has forgotten. Its
+instructions file grows until every session pays for ten thousand tokens of text it
+mostly does not need, and the one fact it does need is buried. It greps the repo for
+things you settled last month.
 
-## The core
+## What this is
 
 ```
+AGENTS.md                      your instructions, plus the two lines in core/AGENTS.md
 knowledge/
-  INDEX.md                generated: one line per fact, date, title, description
-  reference_<slug>.md     one fact: title, description, source, updated, optional keywords, body
-  feedback_<slug>.md      a correction, with the why
-  ...
-skills/sagnis/SKILL.md    the procedure, ~2 KB, loaded when memory is needed
-scripts/sagnis.py         save · delete · log · keywords · build [--check] · find
+  INDEX.md                     generated: one line per fact, newest first; imported into AGENTS.md
+  feedback_<slug>.md           a correction you gave, with the why
+  reference_<slug>.md          a pointer or a gotcha
+  user_<slug>.md  project_...  who you are, what is in flight
+  notes/<slug>.md              the long record behind a fact, read only when the fact is not enough
+skills/sagnis/SKILL.md         the write procedure, ~2 KB, loaded when something is worth saving
+core/sagnis.py                 save · delete · keywords · build --check · find · budget
 ```
 
-The assistant reads the index whole and opens one fact. To save, it supplies the
-content and `save` does the file, the index line and the ordering, so the index cannot
-drift from the facts. `find` is full-text search over every fact for the question
-whose words are not in any index line; `build --check` fails when anything was edited
-by hand.
-
-Measured ([EVIDENCE.md](EVIDENCE.md)): on the setup it was distilled from, 19% less
-per session at 27 of 27 correct; on the first outside install, a quarter of the bytes
-per lookup at the same accuracy, and 42 of 44 unseen questions found in the top five
-by search alone.
+The index is in context on every session because the instructions file imports it, so
+the assistant sees every fact's one line without opening anything, and opens one file
+when it needs the detail. `save` writes the fact and regenerates the index, so the two
+cannot drift. `budget` counts the tokens of everything a session reads before it does
+any work and fails above a number you set. `find` is the safety net for a question
+whose words are in no index line.
 
 ## Install (10 minutes)
 
-1. Copy `core/SKILL.md` to where your assistant reads skills
-   (`~/.claude/skills/sagnis/SKILL.md`, `~/.codex/skills/sagnis/SKILL.md`) and
-   `core/sagnis.py` anywhere it can run. Replace `<MEMORY ROOT>` in the skill with
-   your memory folder, e.g. `~/.claude/knowledge`. Make that folder.
-2. Add one line to your assistant's instructions file (`AGENTS.md`, `CLAUDE.md`,
-   whatever it reads first): *Memory is `<MEMORY ROOT>`: open `INDEX.md`, then one
-   fact, before searching anything. To save or correct: the sagnis skill.*
-3. Tell it three things it keeps forgetting. Check the folder: three fact files and an
-   `INDEX.md`. Run `python sagnis.py build --root <MEMORY ROOT> --check`: `DRIFT nothing`.
+1. Copy `core/sagnis.py` somewhere it can run and `core/SKILL.md` to where your
+   assistant reads skills (`~/.claude/skills/sagnis/SKILL.md`,
+   `~/.codex/skills/sagnis/SKILL.md`). Replace `<MEMORY ROOT>` in the skill with your
+   memory folder. Make the folder.
+2. Add the two lines from `core/AGENTS.md` to your instructions file: the memory
+   sentence, and `@<MEMORY ROOT>/INDEX.md` on its own line. Claude Code loads an
+   `@path` import; a tool without imports reads the line as a pointer and opens the file.
+3. Tell the assistant three things it keeps getting wrong. Check the folder: three
+   `feedback_` files and an `INDEX.md`.
+4. Run the two checks:
 
-Then, in a fresh session, ask about one of the three. It should open the index and
-one file, not the tree. Ask one thing you never told it; it should say "not in
-memory" rather than guess. That is the whole install.
+```
+python core/sagnis.py build --root <MEMORY ROOT> --check     # DRIFT nothing
+python core/sagnis.py budget AGENTS.md --max 2000            # the whole injected set, in tokens
+```
+
+If the budget is over, cut the instructions file before adding memory. Most of a long
+instructions file is facts that belong in short files behind the index.
+
+Then, in a fresh session, ask about one of the three. It should answer from the index
+line or open one file, not search. Ask something you never told it; it should say "not
+in memory" rather than guess. That is the install.
 
 [example/knowledge/](example/knowledge/) is a five-fact memory for a fictional
-landscaping company, built with `save`, to see the shapes.
+landscaping company, written with `save`.
 
-## Growing it
+## Rules that keep it small
 
-Nothing else is installed until it has earned its place. [ADDONS.md](ADDONS.md) lists
-each add-on with the trigger that means you need it: topics and routes when the index
-passes about 2 KB, a decision log the first time a decision is relitigated, rules the
-second time one has to be given, a task table with clean-run counts when you start
-automating, guardrails when the assistant can act on real data. Each is a file and a
-paragraph pasted into the skill.
+- A fact is about 150 words. Longer detail goes in `notes/<slug>.md`; the fact names it.
+- A correction is a `feedback_` fact written before anything else. That is the one
+  mechanism here that makes the next session better than the last.
+- A decision updates the fact it changes; the commit message carries the why. There is
+  no log, no journal, no rollup: `git log` is the journal.
+- When the index passes about 2 KB, split into topic folders (one `INDEX.md` each) and
+  import the one a project needs. Nothing else is added until a measured miss earns it.
 
-Already have notes, a context folder or a memory export? [MIGRATING.md](MIGRATING.md).
+## Measured
+
+On the setup it was distilled from ([EVIDENCE.md](EVIDENCE.md)): 19% fewer tokens per
+session, correctness unchanged at 27 of 27. The first month of use then showed which
+parts did the work: the injected files and the feedback facts. A routing hop the
+assistant was meant to take on its own was skipped in 99 of 105 real sessions, so the
+index is now imported instead of pointed at. Same answers, fewer tokens, no
+re-explaining. Not more accurate: the evidence does not support that claim.
 
 ## What this is not
 
 Not a framework, not a service, not a team tool, not an agent runtime. It schedules
-nothing and owns nothing. It is a folder shape, one script and a short procedure. What
-you build on top is yours.
+nothing and owns nothing. It is a folder shape, one script and a short procedure.
 
 MIT. [CONTRIBUTING.md](CONTRIBUTING.md). If you followed the install and stalled, that
 is the bug we most want: [open an issue](../../issues/new?template=install-stall.md).
