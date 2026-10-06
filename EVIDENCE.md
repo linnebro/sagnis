@@ -42,7 +42,8 @@ places. None of it was the facts.
 
 **Test 2: writes through a script instead of the model.** The same three saves replayed
 through `save`: bytes the model read fell from 13,461 to about 7,150, and index drift
-went from *caught* to *impossible*, since the index is generated from the fact. The
+went from *caught after the fact* to *prevented on the save path*, since `save`
+regenerates the index from the fact; a later hand edit is still caught by `build --check`. The
 write procedure fell from 2.3 KB to 1.4 KB.
 
 **Test 3: routing accuracy on 48 unseen questions** (11 indirect, 6 hidden-term, 5
