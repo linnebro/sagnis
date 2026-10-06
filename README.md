@@ -32,8 +32,8 @@ core/sagnis.py                 save · delete · keywords · build --check · fi
 
 The index is in context on every session because the instructions file imports it, so
 the assistant sees every fact's one line without opening anything, and opens one file
-when it needs the detail. `save` writes the fact and regenerates the index, so the two
-cannot drift. `budget` counts the tokens of everything a session reads before it does
+when it needs the detail. `save` writes the fact and regenerates the index together;
+`build --check` catches drift from later hand edits. `budget` counts the tokens of everything a session reads before it does
 any work and fails above a number you set. `find` is the safety net for a question
 whose words are in no index line.
 
