@@ -12,8 +12,8 @@ line answers the question, before searching anything. To save or correct: the sa
 
 Claude Code loads an `@path` line as an import, so the index is in context on every
 session. Codex and Cursor read the line as text; the sentence above tells them to open
-the file. Either way the assistant never descends through a route to find the index: it
-is already there.
+the file, which is a step they can skip, so check it in a fresh session. Only the
+import form has been tested.
 
 Keep the whole injected set under a budget and check it:
 

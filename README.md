@@ -5,9 +5,9 @@ imported into the instructions it already reads, and a script that keeps the two
 step. The assistant stops re-reading your repo for things you told it, and stops
 forgetting your corrections.**
 
-One script, Python 3 standard library, no accounts, no dependencies. Works with any
-assistant that reads an `AGENTS.md` or `CLAUDE.md` and can run a script: Claude Code,
-Codex, Cursor.
+One script, Python 3 standard library, no accounts, no dependencies. Tested on Claude
+Code. Any assistant that reads an `AGENTS.md` or `CLAUDE.md` and can run a script
+should work; Codex and Cursor read the index line as a pointer and are untested.
 
 ## The problem
 
@@ -30,12 +30,15 @@ skills/sagnis/SKILL.md         the write procedure, ~2 KB, loaded when something
 core/sagnis.py                 save · delete · keywords · build --check · find · budget
 ```
 
-The index is in context on every session because the instructions file imports it, so
-the assistant sees every fact's one line without opening anything, and opens one file
-when it needs the detail. `save` writes the fact and regenerates the index together;
-`build --check` catches drift from later hand edits. `budget` counts the tokens of everything a session reads before it does
-any work and fails above a number you set. `find` is the safety net for a question
-whose words are in no index line.
+With an assistant that loads `@path` imports, the index is in context on every session:
+it sees every fact's one line without opening anything, and opens one file when it
+needs the detail. An assistant without imports is told to open the index instead; that
+fallback is a lookup step it can skip, so it needs the fresh-session check in step 4.
+`save` writes the fact and regenerates the index together; `build --check` catches
+drift from later hand edits. `budget` estimates the tokens of the instructions file and
+every file it imports, at four characters a token, and fails above a number you set.
+It does not see the assistant platform's own prompt and tool schemas. `find` is the
+safety net for a question whose words are in no index line.
 
 ## Install (10 minutes)
 
@@ -45,22 +48,25 @@ whose words are in no index line.
    memory folder. Make the folder.
 2. Add the two lines from `core/AGENTS.md` to your instructions file: the memory
    sentence, and `@<MEMORY ROOT>/INDEX.md` on its own line. Claude Code loads an
-   `@path` import; a tool without imports reads the line as a pointer and opens the file.
+   `@path` import, so the index is in context. A tool without imports reads the line
+   as a pointer and must open the file itself; step 4 checks whether it does.
 3. Tell the assistant three things it keeps getting wrong. Check the folder: three
    `feedback_` files and an `INDEX.md`.
 4. Run the two checks:
 
 ```
 python core/sagnis.py build --root <MEMORY ROOT> --check     # DRIFT nothing
-python core/sagnis.py budget AGENTS.md --max 2000            # the whole injected set, in tokens
+python core/sagnis.py budget AGENTS.md --max 2000            # the file plus its imports, estimated tokens
 ```
 
 If the budget is over, cut the instructions file before adding memory. Most of a long
 instructions file is facts that belong in short files behind the index.
 
 Then, in a fresh session, ask about one of the three. It should answer from the index
-line or open one file, not search. Ask something you never told it; it should say "not
-in memory" rather than guess. That is the install.
+line or open one file, not search. Ask about one of them again in words that do not
+appear in its index line; it should run `find` and still land on the fact. Ask
+something you never told it; it should say "not in memory" rather than guess. That is
+the install.
 
 [example/knowledge/](example/knowledge/) is a five-fact memory for a fictional
 landscaping company, written with `save`.
@@ -77,12 +83,12 @@ landscaping company, written with `save`.
 
 ## Measured
 
-On the setup it was distilled from ([EVIDENCE.md](EVIDENCE.md)): 19% fewer tokens per
-session, correctness unchanged at 27 of 27. The first month of use then showed which
-parts did the work: the injected files and the feedback facts. A routing hop the
-assistant was meant to take on its own was skipped in 99 of 105 real sessions, so the
-index is now imported instead of pointed at. Same answers, fewer tokens, no
-re-explaining. Not more accurate: the evidence does not support that claim.
+Earlier tests on the setup this was distilled from found 19% fewer tokens per session,
+correctness unchanged at 27 of 27. Eleven days of use then showed the assistant skipped
+the intended lookup step in 99 of 105 real sessions, so this version imports the index
+directly. The effect of that change on ordinary sessions has not been measured yet.
+Not more accurate: the evidence does not support that claim. Methods and limits are in
+[EVIDENCE.md](EVIDENCE.md).
 
 ## What this is not
 
