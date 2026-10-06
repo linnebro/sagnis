@@ -70,7 +70,7 @@ decision question answered from `LOG.md`; on an untouched copy of that corpus `b
 --check` reports no drift, so the generated indexes are byte-identical to the tested
 build's.
 
-## 3. The first month of use: 206 sessions (2026-09-23 to 2026-10-04)
+## 3. The first eleven days of use: 206 sessions (2026-09-23 to 2026-10-04)
 
 The original setup ran the published shape for eleven days. Every session transcript
 over 50 KB was then read for what the assistant actually did with the memory.
@@ -92,7 +92,7 @@ design asked the assistant to route from the instructions to a topic index to a 
 its own, and in the business repository it skipped that hop 99 times in 105 and grepped
 instead. Facts that are not in context are an archive, not a memory.
 
-Three other things the month showed. The facts had grown: median 274 words, seventeen
+Three other things the eleven days showed. The facts had grown: median 274 words, seventeen
 over 500, the largest 3,379, so "one fact per file" had become "one document per file".
 Four overlapping records of state existed (task roster, decision log, journal, a status
 page), rewritten four times in one day. And of nine scripts, one was wired to anything.
@@ -101,7 +101,7 @@ Changes made the same day, all now the published shape: the topic index is impor
 into the instructions file rather than pointed at; a fact is about 150 words with the
 long record in `notes/`; the journal and the decision log are gone, with commit
 messages as the record; one task surface; and `budget` exists so the injected set has
-a number. Half the sessions of the month were upkeep of the memory itself; that is the
+a number. Half the sessions were upkeep of the memory itself; that is the
 cost the cuts are meant to remove. Whether they do is the next measurement.
 
 ## What this does not show
