@@ -4,7 +4,8 @@
 A memory is a folder of fact files behind a generated INDEX.md. This script does
 everything that is formatting or bookkeeping, so the model's only job is content.
 
-  save      write or update one fact, regenerate its index
+  save      write or update one fact, regenerate its index (an existing fact needs --expect <hash>)
+  show      print a fact with its hash: the read a later save --expect refers to
   delete    remove a fact, regenerate its index
   keywords  add search words to a fact (the miss log: the words someone asked with)
   build     regenerate every INDEX.md from the facts; --check reports drift and writes nothing
@@ -18,6 +19,8 @@ A fact file, the only thing written by hand (or by `save`):
     title: "Cedar Yard"
     description: "one line, at most 120 characters; it becomes the index line"
     source: "where it came from, with a date"
+    status: stated            # stated | verified | inferred | superseded
+    verified: "2026-09-16 against the org chart"   # only with status verified
     updated: 2026-09-16
     keywords: "optional. names, acronyms, synonyms, misspellings. read by find, never by the model"
     ---
@@ -32,6 +35,11 @@ listed, not walked (a notes/ folder with an INDEX.md is one). scripts/ and initi
 import argparse, collections, datetime, math, os, re, sys
 
 TYPES = ["user", "project", "feedback", "reference"]
+# How far a fact can be trusted. stated: the user said or decided it (the source names who and when);
+# verified: checked against its authoritative source (`verified:` says when and where);
+# inferred: the model's reading, summary or assumption; superseded: kept for history, names
+# what replaced it. A stated or verified fact changes only on the user's word or a re-check.
+STATUSES = ["stated", "verified", "inferred", "superseded"]
 STATE = ["TASKS.md", "RULES.md"]
 SKIP_DIRS = {"journal", "scripts", "initiatives", "__pycache__"}
 MAX_DESC = 120
@@ -60,11 +68,11 @@ def parse(text):
 
 def render(fields, body):
     out = ["---"]
-    for k in ("title", "description", "source", "updated", "keywords"):
+    for k in ("title", "description", "source", "status", "verified", "updated", "keywords"):
         v = fields.get(k, "")
-        if k == "keywords" and not v:
+        if k in ("keywords", "status", "verified") and not v:
             continue
-        out.append(f"{k}: {v}" if k == "updated" else f'{k}: "{v.replace(chr(34), chr(39))}"')
+        out.append(f"{k}: {v}" if k in ("updated", "status") else f'{k}: "{v.replace(chr(34), chr(39))}"')
     return "\n".join(out) + "\n---\n" + body.strip() + "\n"
 
 
@@ -83,7 +91,8 @@ def is_fact(name):
 
 def index_line(fname, fields):
     title = fields.get("title") or fname[:-3].split("_", 1)[1].replace("-", " ").capitalize()
-    return f"- {fields['updated']} [{title}]({fname}) — {fields['description']}"
+    mark = f" ({fields['status']})" if fields.get("status") in ("inferred", "superseded") else ""
+    return f"- {fields['updated']} [{title}]({fname}) — {fields['description']}{mark}"
 
 
 def check_fields(fields, body):
@@ -92,6 +101,8 @@ def check_fields(fields, body):
         return "missing " + ", ".join(missing)
     if not body.strip():
         return "empty body"
+    if fields.get("status") and fields["status"] not in STATUSES:
+        return f"status is '{fields['status']}', one of {', '.join(STATUSES)}"
     if len(fields["description"]) > MAX_DESC:
         return f"description is {len(fields['description'])} characters, the cap is {MAX_DESC}"
     return None
@@ -175,6 +186,10 @@ def build(root, check=False):
         for _, name in tops:
             if name and not re.search(rf"\b{re.escape(name)}\b", routes):
                 warns.append(f"routes: topic '{name}' is not named in MEMORY.md")
+    unrated = [f"{name + '/' if name else ''}{f}" for tdir, name in tops for f in sorted(os.listdir(tdir))
+               if is_fact(f) and not parse(read(os.path.join(tdir, f)))[0].get("status")]
+    if unrated:
+        warns.append(f"{len(unrated)} fact(s) carry no status (stated|verified|inferred|superseded), e.g. {unrated[0]}")
     return changed, problems, warns
 
 
@@ -195,21 +210,43 @@ def regen(tdir, name):
     return os.path.join(tdir, "INDEX.md")
 
 
-def save(root, topic, typ, slug, title, description, source, body, updated=None, keywords=""):
+def fact_hash(path):
+    import hashlib
+    return hashlib.sha256(open(path, "rb").read()).hexdigest()[:12]
+
+
+def save(root, topic, typ, slug, title, description, source, body, updated=None, keywords="",
+         status="inferred", verified="", expect=None):
+    """Write one fact. Changing an existing fact needs `expect`, the hash `show` printed when
+    the writer read it: a fact another session changed since then is refused, never overwritten."""
     tdir = topic_dir(root, topic)
     if typ not in TYPES:
         raise ValueError(f"type must be one of {TYPES}")
     if not re.fullmatch(r"[a-z0-9][a-z0-9_-]*", slug):       # underscores: facts migrated from older layouts
         raise ValueError("slug: lower-case letters, digits, hyphens and underscores")
     fields = {"title": " ".join(title.split()), "description": " ".join(description.split()),
-              "source": " ".join(source.split()), "updated": updated or datetime.date.today().isoformat(),
-              "keywords": " ".join(keywords.split())}
+              "source": " ".join(source.split()), "status": status, "verified": " ".join(verified.split()),
+              "updated": updated or datetime.date.today().isoformat(), "keywords": " ".join(keywords.split())}
+    if status not in STATUSES:
+        raise ValueError(f"status must be one of {STATUSES}")
     err = check_fields(fields, body)
     if err:
         raise ValueError(err)
     fpath = os.path.join(tdir, f"{typ}_{slug}.md")
+    if os.path.exists(fpath) and expect != fact_hash(fpath):
+        raise ValueError(f"{typ}_{slug}.md exists and " + ("changed since you read it" if expect else "you passed no --expect")
+                         + f": run `show --topic {topic} --file {typ}_{slug}.md`, read the current version, "
+                           "then save again with --expect <its hash>")
     write(fpath, render(fields, body))
     return [fpath, regen(tdir, topic)]
+
+
+def show(root, topic, fname):
+    """The current fact with its hash: the read that a later `save --expect` refers to."""
+    fpath = os.path.join(topic_dir(root, topic), fname)
+    if not os.path.exists(fpath):
+        raise ValueError(f"{fname} is not in {topic or 'the root'}")
+    return f"hash: {fact_hash(fpath)}\n" + read(fpath)
 
 
 def delete(root, topic, fname):
@@ -344,8 +381,13 @@ def main(argv=None):
     common(s, "type", "slug", "title", "description", "source")
     s.add_argument("--updated", help="YYYY-MM-DD, default today")
     s.add_argument("--keywords", default="", help="comma-separated search words")
+    s.add_argument("--status", default="inferred", choices=STATUSES,
+                   help="stated (the user said it), verified (checked at its source), inferred (default), superseded")
+    s.add_argument("--verified", default="", help="with status verified: 'YYYY-MM-DD against <source>'")
+    s.add_argument("--expect", help="changing an existing fact: the hash `show` printed")
     g = s.add_mutually_exclusive_group(required=True)
     g.add_argument("--body"); g.add_argument("--body-file")
+    common(sub.add_parser("show", help="print a fact with its hash (read before changing it)"), "file")
     common(sub.add_parser("delete", help="remove a fact"), "file")
     common(sub.add_parser("keywords", help="add search words to a fact"), "file", "words")
     b = sub.add_parser("build", help="regenerate every INDEX.md")
@@ -380,7 +422,11 @@ def main(argv=None):
             return 0 if total <= a.max else 1
         if a.cmd == "save":
             body = a.body if a.body is not None else read(a.body_file)
-            out = save(a.root, a.topic, a.type, a.slug, a.title, a.description, a.source, body, a.updated, a.keywords)
+            out = save(a.root, a.topic, a.type, a.slug, a.title, a.description, a.source, body, a.updated, a.keywords,
+                       a.status, a.verified, a.expect)
+        elif a.cmd == "show":
+            print(show(a.root, a.topic, a.file))
+            return 0
         elif a.cmd == "delete":
             out = delete(a.root, a.topic, a.file)
         else:
@@ -428,6 +474,25 @@ def selftest():
         rows = budget([os.path.join(d, "AGENTS.md")])
         assert [os.path.basename(r[0]) for r in rows][:2] == ["AGENTS.md", "INDEX.md"] and rows[-1][1] is None, rows
         assert all(t is None or t == len(read(os.path.abspath(os.path.expanduser(pth)))) // 4 for pth, t in rows)
+        # status: inferred is the default and is marked in the index; stated is not
+        assert "delivers Tuesdays (inferred)" in read(os.path.join(d, "INDEX.md"))
+        # changing an existing fact: refused without the hash of the version read, or with a stale one
+        fp = os.path.join(d, "reference_cedar-yard.md")
+        for exp in (None, "000000000000"):
+            try:
+                save(d, "", "reference", "cedar-yard", "Cedar Yard", "x", "s", "b", expect=exp)
+                raise AssertionError("an overwrite without the current hash was accepted")
+            except ValueError as e:
+                assert "show --topic" in str(e)
+        h = show(d, "", "reference_cedar-yard.md").splitlines()[0][6:]
+        save(d, "", "reference", "cedar-yard", "Cedar Yard", "the mulch yard; delivers Tuesdays",
+             "Jo, 2026-09-17", body, "2026-09-17", "mulch, bark, deliveries", status="stated", expect=h)
+        assert "status: stated" in read(fp) and "(stated)" not in read(os.path.join(d, "INDEX.md"))
+        try:
+            save(d, "", "reference", "new-one", "N", "n", "s", "b", status="maybe")
+            raise AssertionError("an unknown status was accepted")
+        except ValueError:
+            pass
         add_keywords(d, "", "reference_stonebrook-pavers.md", "pavers, stone, stonebrook")
         assert "stonebrook" in parse(read(os.path.join(d, "reference_stonebrook-pavers.md")))[0]["keywords"]
         assert find(d, "stonebrook")[0].startswith("reference_stonebrook-pavers.md")

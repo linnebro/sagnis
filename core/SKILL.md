@@ -30,7 +30,16 @@ Your part is judgement: what is worth saving, the wording, the source. The scrip
 the index; never edit an `INDEX.md` by hand.
 
 - A fact, new or changed:
-  `python sagnis.py save --root <MEMORY ROOT> --type user|feedback|project|reference --slug <a-slug> --title "..." --description "<one line, ≤120 chars>" --source "<where, when>" --keywords "<names, acronyms, synonyms>" --body "..."`
+  `python sagnis.py save --root <MEMORY ROOT> --type user|feedback|project|reference --slug <a-slug> --title "..." --description "<one line, ≤120 chars>" --source "<where, when>" --status stated|verified|inferred|superseded --keywords "<names, acronyms, synonyms>" --body "..."`
+- `--status`: **stated** only when I said or decided it (the source names me and the date);
+  **verified** when you checked it at its authoritative source (add `--verified "<date> against <source>"`);
+  otherwise **inferred**, the default: your reading, summary or assumption; **superseded** keeps
+  history and names what replaced it. The index marks inferred and superseded lines; check an
+  inferred fact at its source before acting on it when a wrong answer is costly.
+- Changing an existing fact: `python sagnis.py show --root <MEMORY ROOT> --file <name>.md` first
+  (it prints the fact's hash), then `save ... --expect <hash>`. Save refuses a fact that changed
+  since you read it: read it again, never work around it. A stated or verified fact changes only
+  on my word or a re-check at its source.
 - A fact stays about 150 words. Longer detail goes in `<MEMORY ROOT>/notes/<slug>.md`,
   and the fact's body names it.
 - A decision: update the facts it changes; the commit message carries what and why.
