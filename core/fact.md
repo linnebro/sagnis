@@ -2,6 +2,7 @@
 title: "Short name, as the index shows it"
 description: "One line, at most 120 characters. This becomes the index line, so it is what the assistant reads to choose."
 source: "Where it came from and when: a person and date, a document and section, a message"
+status: inferred
 updated: 2026-01-01
 keywords: "optional: names, roles, acronyms both ways, synonyms, common misspellings. Search only; never read by the assistant"
 ---
@@ -14,3 +15,7 @@ File name: `<type>_<slug>.md`. Types: `user` (who they are, how they work), `fee
 (a correction or confirmed way of working, with the why), `project` (work in flight,
 absolute dates), `reference` (a pointer or a gotcha about something external).
 `sagnis.py save` writes this file for you; the template is here for a hand-written one.
+
+`status`: `stated` (the user said or decided it), `verified` (checked at its source; add
+`verified: "<date> against <source>"`), `inferred` (the assistant's reading; the default),
+`superseded` (kept for history; the body names what replaced it).

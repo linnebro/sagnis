@@ -2,6 +2,7 @@
 title: "QuickBooks export gotcha"
 description: "the customer CSV export drops address line 2; re-join Customers/addresses.csv before rebuilding the route sheet"
 source: "route rebuild, 2026-09-08"
+status: inferred
 updated: 2026-09-08
 keywords: "QBO, quickbooks, export, CSV, address, apartment, wrong address, route sheet"
 ---

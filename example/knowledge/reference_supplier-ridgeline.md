@@ -2,6 +2,7 @@
 title: "Ridgeline Supply (mulch, stone)"
 description: "bulk mulch and patio stone; order by Thursday noon for Monday delivery; minimum 3 yards; contact in suppliers.csv"
 source: "Maya, 2026-09-08"
+status: stated
 updated: 2026-09-08
 keywords: "supplier, vendor, mulch, stone, delivery, lead time, minimum order"
 ---

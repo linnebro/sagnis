@@ -2,6 +2,7 @@
 title: "Crew schedule"
 description: "Mon north route, Wed river road, Fri town; a rain day rolls to Saturday; no admin on crew days"
 source: "Maya, 2026-09-01"
+status: stated
 updated: 2026-09-01
 keywords: "schedule, mowing days, route days, rain day, when is Maya free, availability, site visit"
 ---

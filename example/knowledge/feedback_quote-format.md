@@ -2,6 +2,7 @@
 title: "Quote format"
 description: "one page: scope, one price, what is not included; never hours or a range; dates in words; filled from Templates/quote.md"
 source: "Maya, 2026-09-08"
+status: stated
 updated: 2026-09-08
 keywords: "quote, estimate, proposal, pricing, hours, hourly, template"
 ---
