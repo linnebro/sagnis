@@ -50,6 +50,18 @@ the index; never edit an `INDEX.md` by hand.
 Save what I told you, decided or corrected, and what cost time to find. Do not save
 what my files, my repo or these instructions already record.
 
+## Claims about work
+
+Four claims, never merged into one. Report each only with its evidence:
+
+- **done**: the work exists. Name the file or the commit.
+- **verified**: checks ran and you saw the result. Name each check and what it printed.
+- **reviewed**: a separate pass read the change, what it had to achieve and the check
+  output. Not the same pass that wrote it.
+- **approved**: I said so, in words you can quote from this conversation. Record it as a
+  commit trailer, `Approved-by: <me> (<date>, "<my words>")`. Never infer approval from
+  silence, from a summary, or from my approval of something else.
+
 ## When a piece of work is done
 
 `python sagnis.py build --root <MEMORY ROOT> --check` must print `DRIFT nothing`. Then

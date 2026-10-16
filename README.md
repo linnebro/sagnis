@@ -26,8 +26,9 @@ knowledge/
   reference_<slug>.md          a pointer or a gotcha
   user_<slug>.md  project_...  who you are, what is in flight
   notes/<slug>.md              the long record behind a fact, read only when the fact is not enough
-skills/sagnis/SKILL.md         the write procedure, ~2 KB, loaded when something is worth saving
-core/sagnis.py                 save · delete · keywords · build --check · find · budget
+skills/sagnis/SKILL.md         the write procedure, ~4 KB, loaded when something is worth saving
+core/sagnis.py                 save · show · delete · keywords · build --check · find · budget
+core/pre-commit                optional: refuse a commit while an index is stale
 ```
 
 With an assistant that loads `@path` imports, the index is in context on every session:
@@ -61,6 +62,12 @@ python core/sagnis.py budget AGENTS.md --max 2000            # the file plus its
 
 If the budget is over, cut the instructions file before adding memory. Most of a long
 instructions file is facts that belong in short files behind the index.
+
+Optional, and worth it once more than one session or tool writes to the folder: copy
+`core/pre-commit` into the memory repo's `.git/hooks/` so a commit is refused while an
+index is stale, and `.github/workflows/check.yml` to run the same check on every push,
+outside your machine. The setup this came from found stale indexes and dead references
+left by hand edits that only a check run at commit time would have caught.
 
 Then, in a fresh session, ask about one of the three. It should answer from the index
 line or open one file, not search. Ask about one of them again in words that do not

@@ -1,0 +1,16 @@
+# Every push and pull request: the selftest exercises every command, and the example's
+# index must be exactly what the script generates. Standard library only; nothing to install.
+# To gate your own memory repo the same way, copy this file and point --root at your folder.
+name: check
+on: [push, pull_request, workflow_dispatch]
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python core/sagnis.py --selftest
+      - run: python core/sagnis.py build --root example/knowledge --check

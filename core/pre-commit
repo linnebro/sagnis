@@ -1,0 +1,8 @@
+#!/bin/sh
+# Optional commit gate: refuse a commit when an INDEX.md no longer matches its facts
+# (a hand edit, a merge, a fact added without save). Copy to .git/hooks/pre-commit in the
+# repo that holds your memory, set the two paths, make it executable. When it refuses, run
+# `sagnis.py build --root <MEMORY ROOT>`, stage the regenerated index, commit again. Do not
+# bypass it with --no-verify.
+root="$(git rev-parse --show-toplevel)"
+exec python "$root/<PATH TO>/sagnis.py" build --root "$root/<MEMORY ROOT>" --check
