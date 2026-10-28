@@ -29,7 +29,8 @@ A fact file, the only thing written by hand (or by `save`):
 File name: <type>_<slug>.md, type one of user | feedback | project | reference.
 Layout: facts directly under the root (one index), or one folder per topic (one
 index each). A subfolder with an INDEX.md and no facts is a folder index and is
-listed, not walked (a notes/ folder with an INDEX.md is one). scripts/ and initiatives/ are skipped. A fact stays about
+listed in the topic's generated FOLDERS.md, not walked (a notes/ folder with an INDEX.md
+is one); the topic index links FOLDERS.md instead of carrying the list. scripts/ and initiatives/ are skipped. A fact stays about
 150 words; the long record behind it goes in notes/<slug>.md and the fact names it.
 """
 import argparse, collections, datetime, math, os, re, sys
@@ -41,6 +42,7 @@ TYPES = ["user", "project", "feedback", "reference"]
 # what replaced it. A stated or verified fact changes only on the user's word or a re-check.
 STATUSES = ["stated", "verified", "inferred", "superseded"]
 STATE = ["TASKS.md", "RULES.md"]
+FOLDERS = "FOLDERS.md"   # generated beside INDEX.md: the folder indexes, opened on demand, not loaded
 SKIP_DIRS = {"journal", "scripts", "initiatives", "__pycache__"}
 MAX_DESC = 120
 LINE = re.compile(r"^- (\d{4}-\d{2}-\d{2}) \[(.+?)\]\((.+?)\) — (.+)$")
@@ -135,14 +137,14 @@ def folder_indexes(tdir):
 
 
 def render_index(tdir, name, lines_by_file):
-    """Deterministic: state links, folder indexes, then facts by type, newest first, then title."""
+    """Deterministic: state links (FOLDERS.md when the topic has folder indexes), then facts by
+    type, newest first, then title. The folder list itself lives in FOLDERS.md (render_folders)."""
     out = [f"# {name.replace('-', ' ').capitalize() if name else 'Memory'}", ""]
     state = [s for s in STATE if os.path.exists(os.path.join(tdir, s))]
+    if folder_indexes(tdir):
+        state.append(FOLDERS)
     if state:
         out += [" · ".join(f"[{s[:-3].capitalize()}]({s})" for s in state), ""]
-    folders = folder_indexes(tdir)
-    if folders:
-        out += ["## Folders"] + folders + [""]
     for t in TYPES:
         rows = [(l, f) for f, l in lines_by_file.items() if f.startswith(t + "_")]
         if not rows:
@@ -150,6 +152,17 @@ def render_index(tdir, name, lines_by_file):
         rows.sort(key=lambda r: (LINE.match(r[0]).group(1), LINE.match(r[0]).group(2).lower()), reverse=True)
         out += [f"## {t}"] + [l for l, _ in rows] + [""]
     return "\n".join(out)
+
+
+def render_folders(tdir, name):
+    """FOLDERS.md text, or None when the topic has no folder indexes."""
+    folders = folder_indexes(tdir)
+    if not folders:
+        return None
+    title = name.replace('-', ' ').capitalize() if name else 'Memory'
+    return "\n".join([f"# {title}: folder indexes", "",
+                      "Open the one for the folder the task touches, never the folder itself.", ""]
+                     + folders + [""])
 
 
 def build_one(tdir, name):
@@ -180,7 +193,15 @@ def build(root, check=False):
             changed.append(os.path.relpath(ipath, root).replace(os.sep, "/"))
             if not check:
                 write(ipath, new)
-    mem = os.path.join(root, "MEMORY.md")
+        fpath, fnew = os.path.join(tdir, FOLDERS), render_folders(tdir, name)
+        fold = read(fpath) if os.path.exists(fpath) else None
+        if fold != fnew:
+            changed.append(os.path.relpath(fpath, root).replace(os.sep, "/"))
+            if not check and fnew is None:
+                os.remove(fpath)
+            elif not check:
+                write(fpath, fnew)
+    mem =os.path.join(root, "MEMORY.md")
     if os.path.exists(mem):
         routes = read(mem)
         for _, name in tops:
@@ -503,7 +524,15 @@ def selftest():
         write(os.path.join(d, "people", "repo", "INDEX.md"), '---\ndescription: "the team wiki"\n---\n# wiki\n')
         save(d, "people", "user", "odette", "Odette", "runs the Thursday crew", "crew schedule 2026-09-22", "Odette runs it.")
         pidx = read(os.path.join(d, "people", "INDEX.md"))
-        assert "## Folders" in pidx and "[repo/](repo/INDEX.md) — the team wiki" in pidx, pidx
+        assert "[Folders](FOLDERS.md)" in pidx and "repo/INDEX.md" not in pidx, pidx
+        build(d)
+        pfold = read(os.path.join(d, "people", FOLDERS))
+        assert "[repo/](repo/INDEX.md) — the team wiki" in pfold, pfold
+        os.remove(os.path.join(d, "people", "repo", "INDEX.md"))
+        assert "people/FOLDERS.md" in build(d)[0]
+        assert not os.path.exists(os.path.join(d, "people", FOLDERS)), "last folder index gone, FOLDERS.md must go"
+        write(os.path.join(d, "people", "repo", "INDEX.md"), '---\ndescription: "the team wiki"\n---\n# wiki\n')
+        build(d)
         write(os.path.join(d, "MEMORY.md"), "# Routes\n- general: nothing yet\n")
         assert build(d, check=True)[2] == ["routes: topic 'people' is not named in MEMORY.md"]
         assert find(d, "Thursday crew")[0].startswith("people/user_odette.md")
