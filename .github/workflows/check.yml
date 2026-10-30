@@ -14,3 +14,8 @@ jobs:
           python-version: "3.12"
       - run: python core/sagnis.py --selftest
       - run: python core/sagnis.py build --root example/knowledge --check
+      - run: |
+          git config --global user.email ci@example.com
+          git config --global user.name ci
+          for f in leak_check backup_config build_shims build_tasks health_check; do python extras/$f.py --selftest; done
+          python extras/audit.py selftest

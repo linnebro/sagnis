@@ -5,9 +5,11 @@
 ```
 python core/sagnis.py --selftest
 python core/sagnis.py build --root example/knowledge --check
+for f in leak_check backup_config build_shims build_tasks health_check; do python extras/$f.py --selftest; done
+python extras/audit.py selftest
 ```
 
-Both must pass. The first exercises every command; the second proves the example's
+All must pass. The first exercises every command; the second proves the example's
 index is what the script generates.
 
 ## What a change looks like
@@ -16,7 +18,10 @@ index is what the script generates.
   standard library. One file; if it needs a second, that is a discussion first.
 - **A change to the core** (the skill, the fact format, what `build` writes) needs a
   reason a stranger can check, and must not add a file to the install. Anything
-  optional stays out until a measured miss earns it (see `EVIDENCE.md`).
+  optional stays out of `core/` until a measured miss earns it (see `EVIDENCE.md`).
+- **An extra** (`extras/`) is optional by definition: it names the miss that earned
+  it in `extras/README.md`, carries a `--selftest` that CI runs, and stays standard
+  library. Nothing in `core/` may depend on one.
 - **The example** is regenerated with `save`, never hand-edited. Fernwood Landscaping
   is fictional; keep it that way.
 - **A claim in `EVIDENCE.md`** names what was measured, how, and what it does not show.

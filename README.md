@@ -97,6 +97,15 @@ directly. The effect of that change on ordinary sessions has not been measured y
 Not more accurate: the evidence does not support that claim. Methods and limits are in
 [EVIDENCE.md](EVIDENCE.md).
 
+## Extras
+
+[extras/](extras/) holds what the source setup added around the memory, each after a
+named miss: a paste-in block of working rules with the reason for each, the four claims
+as a review process, a config backup, a drift check that runs after every session, a
+task roster generated from initiative files, an audit trail, instruction shims, and a
+leak check for publishing from a private workspace. None is part of the install; add
+one when you hit its miss.
+
 ## What this is not
 
 Not a framework, not a service, not a team tool, not an agent runtime. It schedules
